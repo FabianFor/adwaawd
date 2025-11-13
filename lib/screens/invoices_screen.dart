@@ -1,14 +1,17 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import '../providers/invoice_provider.dart';
 import '../providers/business_provider.dart';
 import '../services/invoice_image_generator.dart';
 
 class InvoicesScreen extends StatelessWidget {
-  const InvoicesScreen({Key? key}) : super(key: key);
+  const InvoicesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +111,65 @@ class InvoicesScreen extends StatelessWidget {
               },
             ),
     );
+  }
+
+  Future<bool> _requestPermissions(BuildContext context) async {
+    if (Platform.isAndroid) {
+      try {
+        final androidInfo = await DeviceInfoPlugin().androidInfo;
+        
+        if (androidInfo.version.sdkInt >= 33) {
+          // Android 13+ (API 33+) - No necesita permisos de almacenamiento
+          print('📱 Android 13+: No se requieren permisos de almacenamiento');
+          return true;
+        } else {
+          // Android 12 y anteriores - Solicitar permisos
+          print('📱 Android ${androidInfo.version.sdkInt}: Solicitando permisos...');
+          final status = await Permission.storage.request();
+          
+          if (status.isDenied) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('⚠️ Se necesitan permisos de almacenamiento'),
+                  backgroundColor: Colors.orange,
+                  duration: Duration(seconds: 3),
+                ),
+              );
+            }
+            return false;
+          }
+          
+          if (status.isPermanentlyDenied) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('⚠️ Permisos denegados. Ve a Configuración'),
+                  backgroundColor: Colors.orange,
+                  duration: const Duration(seconds: 3),
+                  action: SnackBarAction(
+                    label: 'Abrir',
+                    textColor: Colors.white,
+                    onPressed: () {
+                      openAppSettings();
+                    },
+                  ),
+                ),
+              );
+            }
+            return false;
+          }
+          
+          print('✅ Permisos otorgados: ${status.isGranted}');
+          return status.isGranted;
+        }
+      } catch (e) {
+        print('❌ Error al verificar permisos: $e');
+        return false;
+      }
+    }
+    // iOS o otras plataformas
+    return true;
   }
 
   void _showInvoiceDetails(BuildContext context, invoice) {
@@ -260,6 +322,11 @@ class InvoicesScreen extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () async {
+                          // Solicitar permisos
+                          if (!await _requestPermissions(context)) {
+                            return;
+                          }
+
                           showDialog(
                             context: context,
                             barrierDismissible: false,
@@ -274,8 +341,16 @@ class InvoicesScreen extends StatelessWidget {
                                 await InvoiceImageGenerator.generateImage(
                               invoice: invoice,
                               businessProfile: businessProvider.profile,
+                              context: context, // AGREGADO
                             );
                             print('✅ Imagen generada: $imagePath');
+
+                            // Verificar que el archivo existe
+                            final file = File(imagePath);
+                            if (!await file.exists()) {
+                              throw Exception('El archivo no fue creado correctamente');
+                            }
+                            print('✅ Archivo verificado: ${await file.length()} bytes');
 
                             if (context.mounted) Navigator.pop(context);
 
@@ -286,13 +361,22 @@ class InvoicesScreen extends StatelessWidget {
                             );
                             print('✅ Resultado: ${result.status}');
 
-                            if (context.mounted && result.status == ShareResultStatus.success) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('✅ Compartido exitosamente'),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
+                            if (context.mounted) {
+                              if (result.status == ShareResultStatus.success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('✅ Compartido exitosamente'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              } else if (result.status == ShareResultStatus.dismissed) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('ℹ️ Compartir cancelado'),
+                                    backgroundColor: Colors.blue,
+                                  ),
+                                );
+                              }
                             }
                           } catch (e, stackTrace) {
                             print('❌ Error: $e');
@@ -302,7 +386,7 @@ class InvoicesScreen extends StatelessWidget {
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('❌ Error: $e'),
+                                  content: Text('❌ Error al compartir: ${e.toString()}'),
                                   backgroundColor: Colors.red,
                                   duration: const Duration(seconds: 5),
                                 ),
@@ -314,6 +398,7 @@ class InvoicesScreen extends StatelessWidget {
                         label: const Text('Compartir'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4CAF50),
+                          foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(vertical: 16.h),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.r),
@@ -325,6 +410,11 @@ class InvoicesScreen extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () async {
+                          // Solicitar permisos
+                          if (!await _requestPermissions(context)) {
+                            return;
+                          }
+
                           showDialog(
                             context: context,
                             barrierDismissible: false,
@@ -339,8 +429,16 @@ class InvoicesScreen extends StatelessWidget {
                                 await InvoiceImageGenerator.generateImage(
                               invoice: invoice,
                               businessProfile: businessProvider.profile,
+                              context: context, // AGREGADO
                             );
                             print('✅ Guardado: $imagePath');
+
+                            // Verificar que el archivo existe
+                            final file = File(imagePath);
+                            if (!await file.exists()) {
+                              throw Exception('El archivo no fue creado correctamente');
+                            }
+                            print('✅ Archivo verificado: ${await file.length()} bytes');
 
                             if (context.mounted) Navigator.pop(context);
 
@@ -361,7 +459,7 @@ class InvoicesScreen extends StatelessWidget {
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('❌ Error: $e'),
+                                  content: Text('❌ Error al descargar: ${e.toString()}'),
                                   backgroundColor: Colors.red,
                                   duration: const Duration(seconds: 5),
                                 ),
@@ -372,6 +470,7 @@ class InvoicesScreen extends StatelessWidget {
                         icon: const Icon(Icons.download),
                         label: const Text('Descargar'),
                         style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF2196F3),
                           padding: EdgeInsets.symmetric(vertical: 16.h),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.r),

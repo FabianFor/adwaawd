@@ -9,73 +9,73 @@ import '../models/invoice.dart';
 import '../models/business_profile.dart';
 
 class InvoiceImageGenerator {
+  static final GlobalKey _globalKey = GlobalKey();
+
   static Future<String> generateImage({
     required Invoice invoice,
     required BusinessProfile businessProfile,
+    required BuildContext context,
   }) async {
-    final widget = InvoiceImageWidget(
-      invoice: invoice,
-      businessProfile: businessProfile,
-    );
-
-    final pngBytes = await _widgetToImage(widget);
-
-    final directory = await getApplicationDocumentsDirectory();
-    final imagePath =
-        '${directory.path}/invoice_${invoice.invoiceNumber}_${DateTime.now().millisecondsSinceEpoch}.png';
-    final file = File(imagePath);
-    await file.writeAsBytes(pngBytes);
-
-    return imagePath;
-  }
-
-  static Future<Uint8List> _widgetToImage(Widget widget) async {
-    final repaintBoundary = RenderRepaintBoundary();
-    final view = WidgetsBinding.instance.platformDispatcher.views.first;
-
-    final renderView = RenderView(
-      view: view,
-      child: RenderPositionedBox(
-        alignment: Alignment.center,
-        child: repaintBoundary,
-      ),
-      configuration: ViewConfiguration(
-        devicePixelRatio: 1.0,
-      ),
-    );
-
-    final pipelineOwner = PipelineOwner();
-    final buildOwner = BuildOwner(focusManager: FocusManager());
-
-    pipelineOwner.rootNode = renderView;
-    renderView.prepareInitialFrame();
-
-    final rootElement = RenderObjectToWidgetAdapter<RenderBox>(
-      container: repaintBoundary,
-      child: Directionality(
-        textDirection: ui.TextDirection.ltr,
-        child: MediaQuery(
-          data: const MediaQueryData(
-            size: ui.Size(400, 700),
-          ),
-          child: Material(
-            child: widget,
+    try {
+      print('📸 Iniciando generación de imagen...');
+      
+      // Mostrar el widget en un overlay invisible para capturarlo
+      final overlay = Overlay.of(context);
+      late OverlayEntry overlayEntry;
+      
+      overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+          left: -10000, // Fuera de la pantalla
+          top: -10000,
+          child: RepaintBoundary(
+            key: _globalKey,
+            child: Material(
+              child: Container(
+                width: 600,
+                color: Colors.white,
+                child: InvoiceImageWidget(
+                  invoice: invoice,
+                  businessProfile: businessProfile,
+                ),
+              ),
+            ),
           ),
         ),
-      ),
-    ).attachToRenderTree(buildOwner);
+      );
 
-    buildOwner.buildScope(rootElement);
-    buildOwner.finalizeTree();
+      overlay.insert(overlayEntry);
 
-    pipelineOwner.flushLayout();
-    pipelineOwner.flushCompositingBits();
-    pipelineOwner.flushPaint();
+      // Esperar a que se renderice
+      await Future.delayed(const Duration(milliseconds: 300));
 
-    final image = await repaintBoundary.toImage(pixelRatio: 1.0);
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      // Capturar la imagen
+      RenderRepaintBoundary boundary =
+          _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      
+      ui.Image image = await boundary.toImage(pixelRatio: 2.0);
+      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-    return byteData!.buffer.asUint8List();
+      print('✅ Widget capturado: ${pngBytes.length} bytes');
+
+      // Remover el overlay
+      overlayEntry.remove();
+
+      // Guardar la imagen
+      final directory = await getApplicationDocumentsDirectory();
+      final imagePath =
+          '${directory.path}/invoice_${invoice.invoiceNumber}_${DateTime.now().millisecondsSinceEpoch}.png';
+      
+      final file = File(imagePath);
+      await file.writeAsBytes(pngBytes);
+
+      print('✅ Imagen guardada: $imagePath');
+      return imagePath;
+    } catch (e, stackTrace) {
+      print('❌ Error en generateImage: $e');
+      print('Stack: $stackTrace');
+      rethrow;
+    }
   }
 }
 
@@ -93,92 +93,101 @@ class InvoiceImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 600,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
+      color: Colors.white,
+      padding: const EdgeInsets.all(32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with logo and business name
+          // Header con logo y nombre del negocio
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (businessProfile.logoPath.isNotEmpty)
-                        Container(
-                          width: 60,
-                          height: 60,
-                          margin: const EdgeInsets.only(bottom: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(
-                              File(businessProfile.logoPath),
-                              fit: BoxFit.contain,
+                if (businessProfile.logoPath.isNotEmpty)
+                  Container(
+                    width: 80,
+                    height: 80,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        File(businessProfile.logoPath),
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.store,
+                            size: 40,
+                            color: Color(0xFF2196F3),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            businessProfile.businessName,
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
                           ),
-                        ),
-                      Text(
-                        businessProfile.businessName,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Gestión de Productos y Boletas',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Gestión de Productos y Boletas',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.9),
-                        ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.receipt_long,
-                    size: 40,
-                    color: Colors.white,
-                  ),
+                      child: const Icon(
+                        Icons.receipt_long,
+                        size: 48,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
 
-          // Invoice Number and Date
+          // Número de boleta y total
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: const Color(0xFF2196F3),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -186,7 +195,7 @@ class InvoiceImageWidget extends StatelessWidget {
                 Text(
                   'Boleta #${invoice.invoiceNumber}',
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -194,7 +203,7 @@ class InvoiceImageWidget extends StatelessWidget {
                 Text(
                   '\$${invoice.total.toStringAsFixed(0)}',
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -202,24 +211,25 @@ class InvoiceImageWidget extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 24),
 
-          // Date
+          // Fecha
           Text(
             DateFormat('dd/MM/yyyy HH:mm').format(invoice.createdAt),
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 18,
               color: Colors.black54,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 24),
 
-          // Customer Info
+          // Información del cliente
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,25 +237,25 @@ class InvoiceImageWidget extends StatelessWidget {
                 const Text(
                   'Cliente:',
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                     color: Colors.black54,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text(
                   invoice.customerName,
                   style: const TextStyle(
-                    fontSize: 22,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 if (invoice.customerPhone.isNotEmpty) ...[
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Text(
                     invoice.customerPhone,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       color: Colors.black54,
                     ),
                   ),
@@ -253,30 +263,31 @@ class InvoiceImageWidget extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
 
-          // Products
+          // Lista de productos
           const Text(
             'Productos:',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade300, width: 2),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               children: [
                 ...invoice.items.map((item) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.only(bottom: 16),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
@@ -286,15 +297,15 @@ class InvoiceImageWidget extends StatelessWidget {
                               Text(
                                 item.productName,
                                 style: const TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(height: 3),
+                              const SizedBox(height: 4),
                               Text(
                                 '\$${item.price.toStringAsFixed(0)} x ${item.quantity}',
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   color: Colors.black54,
                                 ),
                               ),
@@ -304,7 +315,7 @@ class InvoiceImageWidget extends StatelessWidget {
                         Text(
                           '\$${item.total.toStringAsFixed(0)}',
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF4CAF50),
                           ),
@@ -313,21 +324,21 @@ class InvoiceImageWidget extends StatelessWidget {
                     ),
                   );
                 }),
-                const Divider(height: 24, thickness: 2),
+                const Divider(height: 32, thickness: 2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
                       'Total:',
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       '\$${invoice.total.toStringAsFixed(0)}',
                       style: const TextStyle(
-                        fontSize: 28,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF4CAF50),
                       ),
@@ -337,17 +348,17 @@ class InvoiceImageWidget extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
 
-          // Footer
+          // Footer con información de contacto
           if (businessProfile.phone.isNotEmpty ||
               businessProfile.email.isNotEmpty ||
               businessProfile.address.isNotEmpty)
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,25 +366,31 @@ class InvoiceImageWidget extends StatelessWidget {
                   const Text(
                     'Información de Contacto:',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   if (businessProfile.phone.isNotEmpty)
-                    Text(
-                      '📞 ${businessProfile.phone}',
-                      style: const TextStyle(fontSize: 14),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        '📞 ${businessProfile.phone}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
                     ),
                   if (businessProfile.email.isNotEmpty)
-                    Text(
-                      '📧 ${businessProfile.email}',
-                      style: const TextStyle(fontSize: 14),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        '📧 ${businessProfile.email}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
                     ),
                   if (businessProfile.address.isNotEmpty)
                     Text(
                       '📍 ${businessProfile.address}',
-                      style: const TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 16),
                     ),
                 ],
               ),

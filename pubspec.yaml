@@ -27,6 +27,12 @@ dependencies:
   # Sharing
   share_plus: ^7.2.1
   
+  # Permissions
+  permission_handler: ^11.0.1
+  
+  # Device Info
+  device_info_plus: ^9.1.0
+  
   # Utils
   uuid: ^4.2.1
   intl: ^0.18.1
@@ -38,8 +44,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  
-  # Si tienes assets, descomenta estas líneas:
-  # assets:
-  #   - assets/images/
-  #   - assets/icons/

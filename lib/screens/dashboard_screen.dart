@@ -22,12 +22,18 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const DashboardHome(),
-    const ProductsScreen(),
-    const OrdersScreen(),
-    const InvoicesScreen(),
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      const DashboardHome(),
+      const ProductsScreen(),
+      const OrdersScreen(),
+      const InvoicesScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
