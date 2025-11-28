@@ -111,7 +111,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboard.
   ///
   /// In es, this message translates to:
-  /// **'Dashboard'**
+  /// **'Panel Principal'**
   String get dashboard;
 
   /// No description provided for @products.
@@ -186,6 +186,12 @@ abstract class AppLocalizations {
   /// **'Nombre del Producto'**
   String get productName;
 
+  /// No description provided for @productNameHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej: Hamburguesa Clásica'**
+  String get productNameHint;
+
   /// No description provided for @price.
   ///
   /// In es, this message translates to:
@@ -198,6 +204,12 @@ abstract class AppLocalizations {
   /// **'Descripción'**
   String get description;
 
+  /// No description provided for @descriptionHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Descripción del producto'**
+  String get descriptionHint;
+
   /// No description provided for @category.
   ///
   /// In es, this message translates to:
@@ -207,7 +219,7 @@ abstract class AppLocalizations {
   /// No description provided for @stock.
   ///
   /// In es, this message translates to:
-  /// **'Stock'**
+  /// **'Cantidad'**
   String get stock;
 
   /// No description provided for @addImage.
@@ -215,6 +227,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Agregar imagen'**
   String get addImage;
+
+  /// No description provided for @tapToSelect.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca para seleccionar'**
+  String get tapToSelect;
+
+  /// No description provided for @selectImage.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar imagen'**
+  String get selectImage;
+
+  /// No description provided for @gallery.
+  ///
+  /// In es, this message translates to:
+  /// **'Galería'**
+  String get gallery;
+
+  /// No description provided for @camera.
+  ///
+  /// In es, this message translates to:
+  /// **'Cámara'**
+  String get camera;
 
   /// No description provided for @save.
   ///
@@ -251,6 +287,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Descargar'**
   String get download;
+
+  /// No description provided for @close.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar'**
+  String get close;
 
   /// No description provided for @createOrder.
   ///
@@ -299,6 +341,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Buscar'**
   String get search;
+
+  /// No description provided for @searchProducts.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar productos...'**
+  String get searchProducts;
 
   /// No description provided for @total.
   ///
@@ -402,6 +450,12 @@ abstract class AppLocalizations {
   /// **'Guardado exitosamente'**
   String get successSaved;
 
+  /// No description provided for @productSavedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Producto guardado exitosamente'**
+  String get productSavedSuccess;
+
   /// No description provided for @successDeleted.
   ///
   /// In es, this message translates to:
@@ -413,6 +467,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Error'**
   String get error;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In es, this message translates to:
+  /// **'Campo requerido'**
+  String get requiredField;
 
   /// No description provided for @food.
   ///
@@ -437,6 +497,36 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Otros'**
   String get others;
+
+  /// No description provided for @galleryPermissionNeeded.
+  ///
+  /// In es, this message translates to:
+  /// **'Se necesitan permisos para acceder a la galería'**
+  String get galleryPermissionNeeded;
+
+  /// No description provided for @cameraPermissionNeeded.
+  ///
+  /// In es, this message translates to:
+  /// **'Se necesitan permisos para usar la cámara'**
+  String get cameraPermissionNeeded;
+
+  /// No description provided for @imageSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'Imagen seleccionada'**
+  String get imageSelected;
+
+  /// No description provided for @errorSelectingImage.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al seleccionar imagen'**
+  String get errorSelectingImage;
+
+  /// No description provided for @businessManagement.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestión de Productos y Boletas'**
+  String get businessManagement;
 }
 
 class _AppLocalizationsDelegate

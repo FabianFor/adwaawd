@@ -2,7 +2,7 @@
   "@@locale": "es",
   
   "appName": "MiNegocio",
-  "dashboard": "Dashboard",
+  "dashboard": "Panel Principal",
   "products": "Productos",
   "orders": "Pedidos",
   "invoices": "Boletas",
@@ -18,11 +18,17 @@
   "deleteProduct": "Eliminar Producto",
   
   "productName": "Nombre del Producto",
+  "productNameHint": "Ej: Hamburguesa Clásica",
   "price": "Precio",
   "description": "Descripción",
+  "descriptionHint": "Descripción del producto",
   "category": "Categoría",
-  "stock": "Stock",
+  "stock": "Cantidad",
   "addImage": "Agregar imagen",
+  "tapToSelect": "Toca para seleccionar",
+  "selectImage": "Seleccionar imagen",
+  "gallery": "Galería",
+  "camera": "Cámara",
   
   "save": "Guardar",
   "cancel": "Cancelar",
@@ -30,6 +36,7 @@
   "edit": "Editar",
   "share": "Compartir",
   "download": "Descargar",
+  "close": "Cerrar",
   
   "createOrder": "Crear Pedido",
   "cart": "Carrito",
@@ -40,6 +47,7 @@
   "customerName": "Nombre del Cliente",
   "customerPhone": "Teléfono",
   "search": "Buscar",
+  "searchProducts": "Buscar productos...",
   
   "total": "Total",
   "quantity": "Cantidad",
@@ -62,11 +70,20 @@
   "cannotUndo": "Esta acción no se puede deshacer",
   
   "successSaved": "Guardado exitosamente",
+  "productSavedSuccess": "Producto guardado exitosamente",
   "successDeleted": "Eliminado exitosamente",
   "error": "Error",
+  "requiredField": "Campo requerido",
   
   "food": "Comida",
   "drinks": "Bebidas",
   "desserts": "Postres",
-  "others": "Otros"
+  "others": "Otros",
+  
+  "galleryPermissionNeeded": "Se necesitan permisos para acceder a la galería",
+  "cameraPermissionNeeded": "Se necesitan permisos para usar la cámara",
+  "imageSelected": "Imagen seleccionada",
+  "errorSelectingImage": "Error al seleccionar imagen",
+  
+  "businessManagement": "Gestión de Productos y Boletas"
 }

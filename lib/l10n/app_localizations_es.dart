@@ -12,7 +12,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get appName => 'MiNegocio';
 
   @override
-  String get dashboard => 'Dashboard';
+  String get dashboard => 'Panel Principal';
 
   @override
   String get products => 'Productos';
@@ -51,19 +51,37 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productName => 'Nombre del Producto';
 
   @override
+  String get productNameHint => 'Ej: Hamburguesa Clásica';
+
+  @override
   String get price => 'Precio';
 
   @override
   String get description => 'Descripción';
 
   @override
+  String get descriptionHint => 'Descripción del producto';
+
+  @override
   String get category => 'Categoría';
 
   @override
-  String get stock => 'Stock';
+  String get stock => 'Cantidad';
 
   @override
   String get addImage => 'Agregar imagen';
+
+  @override
+  String get tapToSelect => 'Toca para seleccionar';
+
+  @override
+  String get selectImage => 'Seleccionar imagen';
+
+  @override
+  String get gallery => 'Galería';
+
+  @override
+  String get camera => 'Cámara';
 
   @override
   String get save => 'Guardar';
@@ -82,6 +100,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get download => 'Descargar';
+
+  @override
+  String get close => 'Cerrar';
 
   @override
   String get createOrder => 'Crear Pedido';
@@ -106,6 +127,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get search => 'Buscar';
+
+  @override
+  String get searchProducts => 'Buscar productos...';
 
   @override
   String get total => 'Total';
@@ -159,10 +183,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get successSaved => 'Guardado exitosamente';
 
   @override
+  String get productSavedSuccess => 'Producto guardado exitosamente';
+
+  @override
   String get successDeleted => 'Eliminado exitosamente';
 
   @override
   String get error => 'Error';
+
+  @override
+  String get requiredField => 'Campo requerido';
 
   @override
   String get food => 'Comida';
@@ -175,4 +205,21 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get others => 'Otros';
+
+  @override
+  String get galleryPermissionNeeded =>
+      'Se necesitan permisos para acceder a la galería';
+
+  @override
+  String get cameraPermissionNeeded =>
+      'Se necesitan permisos para usar la cámara';
+
+  @override
+  String get imageSelected => 'Imagen seleccionada';
+
+  @override
+  String get errorSelectingImage => 'Error al seleccionar imagen';
+
+  @override
+  String get businessManagement => 'Gestión de Productos y Boletas';
 }

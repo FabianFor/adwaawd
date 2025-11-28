@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import '../l10n/app_localizations.dart'; // ✅ CORREGIDO
 import '../providers/product_provider.dart';
+import '../providers/settings_provider.dart';
 import '../models/product.dart';
 import '../widgets/product_card.dart';
 import '../services/permission_handler.dart';
@@ -14,10 +16,11 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
+    final l10n = AppLocalizations.of(context)!; // ✅ AGREGADO
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Productos'),
+        title: Text(l10n.products), // ✅ TRADUCIDO
         backgroundColor: const Color(0xFF2196F3),
         foregroundColor: Colors.white,
       ),
@@ -30,7 +33,7 @@ class ProductsScreen extends StatelessWidget {
                       size: 80.sp, color: Colors.grey),
                   SizedBox(height: 16.h),
                   Text(
-                    'No hay productos registrados',
+                    l10n.noProducts, // ✅ TRADUCIDO
                     style: TextStyle(fontSize: 18.sp, color: Colors.grey),
                   ),
                 ],
@@ -48,7 +51,7 @@ class ProductsScreen extends StatelessWidget {
         onPressed: () => _showAddProductDialog(context),
         backgroundColor: const Color(0xFF4CAF50),
         icon: const Icon(Icons.add),
-        label: const Text('Agregar'),
+        label: Text(l10n.addProduct), // ✅ TRADUCIDO
       ),
     );
   }
@@ -76,10 +79,10 @@ class _AddProductDialogState extends State<AddProductDialog> {
   late TextEditingController _priceController;
   late TextEditingController _descriptionController;
   late TextEditingController _stockController;
-  String _category = 'Comida';
+  String _category = 'food'; // ✅ Usar claves en vez de texto
   String? _imagePath;
 
-  final List<String> _categories = ['Comida', 'Bebidas', 'Postres', 'Otros'];
+  final List<String> _categories = ['food', 'drinks', 'desserts', 'others']; // ✅ Claves
 
   @override
   void initState() {
@@ -91,7 +94,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
         TextEditingController(text: widget.product?.description ?? '');
     _stockController =
         TextEditingController(text: widget.product?.stock.toString() ?? '');
-    _category = widget.product?.category ?? 'Comida';
+    _category = widget.product?.category ?? 'food';
     _imagePath = widget.product?.imagePath;
   }
 
@@ -105,16 +108,18 @@ class _AddProductDialogState extends State<AddProductDialog> {
   }
 
   Future<void> _showImageSourceDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Seleccionar imagen'),
+        title: Text(l10n.selectImage), // ✅ TRADUCIDO
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library, color: Color(0xFF2196F3)),
-              title: const Text('Galería'),
+              title: Text(l10n.gallery), // ✅ TRADUCIDO
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
@@ -122,7 +127,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Color(0xFF4CAF50)),
-              title: const Text('Cámara'),
+              title: Text(l10n.camera), // ✅ TRADUCIDO
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.camera);
@@ -135,17 +140,17 @@ class _AddProductDialogState extends State<AddProductDialog> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
+    final l10n = AppLocalizations.of(context)!;
     bool hasPermission = false;
 
-    // Solicitar permisos según la fuente
     if (source == ImageSource.gallery) {
       hasPermission = await AppPermissionHandler.requestGalleryPermission(context);
       
       if (!hasPermission) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('⚠️ Se necesitan permisos para acceder a la galería'),
+            SnackBar(
+              content: Text('⚠️ ${l10n.galleryPermissionNeeded}'), // ✅ TRADUCIDO
               backgroundColor: Colors.orange,
             ),
           );
@@ -158,8 +163,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
       if (!hasPermission) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('⚠️ Se necesitan permisos para usar la cámara'),
+            SnackBar(
+              content: Text('⚠️ ${l10n.cameraPermissionNeeded}'), // ✅ TRADUCIDO
               backgroundColor: Colors.orange,
             ),
           );
@@ -184,10 +189,10 @@ class _AddProductDialogState extends State<AddProductDialog> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Imagen seleccionada'),
+            SnackBar(
+              content: Text('✅ ${l10n.imageSelected}'), // ✅ TRADUCIDO
               backgroundColor: Colors.green,
-              duration: Duration(seconds: 1),
+              duration: const Duration(seconds: 1),
             ),
           );
         }
@@ -197,7 +202,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ Error al seleccionar imagen: $e'),
+            content: Text('❌ ${l10n.errorSelectingImage}: $e'), // ✅ TRADUCIDO
             backgroundColor: Colors.red,
           ),
         );
@@ -205,8 +210,26 @@ class _AddProductDialogState extends State<AddProductDialog> {
     }
   }
 
+  String _getCategoryTranslation(String categoryKey, AppLocalizations l10n) {
+    switch (categoryKey) {
+      case 'food':
+        return l10n.food;
+      case 'drinks':
+        return l10n.drinks;
+      case 'desserts':
+        return l10n.desserts;
+      case 'others':
+        return l10n.others;
+      default:
+        return categoryKey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final settingsProvider = Provider.of<SettingsProvider>(context);
+    final l10n = AppLocalizations.of(context)!; // ✅ AGREGADO
+    
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       child: Container(
@@ -224,8 +247,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   children: [
                     Text(
                       widget.product == null
-                          ? 'Nuevo Producto'
-                          : 'Editar Producto',
+                          ? l10n.newProduct // ✅ TRADUCIDO
+                          : l10n.editProduct, // ✅ TRADUCIDO
                       style: TextStyle(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.bold,
@@ -288,10 +311,10 @@ class _AddProductDialogState extends State<AddProductDialog> {
                               Icon(Icons.add_photo_alternate,
                                   size: 40.sp, color: Colors.grey),
                               SizedBox(height: 8.h),
-                              Text('Agregar imagen',
+                              Text(l10n.addImage, // ✅ TRADUCIDO
                                   style: TextStyle(color: Colors.grey[600])),
                               SizedBox(height: 4.h),
-                              Text('Toca para seleccionar',
+                              Text(l10n.tapToSelect, // ✅ TRADUCIDO
                                   style: TextStyle(
                                     color: Colors.grey[500],
                                     fontSize: 12.sp,
@@ -306,14 +329,14 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(
-                    labelText: 'Nombre del Producto',
-                    hintText: 'Ej: Hamburguesa Clásica',
+                    labelText: l10n.productName, // ✅ TRADUCIDO
+                    hintText: l10n.productNameHint, // ✅ TRADUCIDO
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
                   validator: (value) =>
-                      value?.isEmpty ?? true ? 'Campo requerido' : null,
+                      value?.isEmpty ?? true ? l10n.requiredField : null, // ✅ TRADUCIDO
                 ),
                 SizedBox(height: 16.h),
 
@@ -321,16 +344,16 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 TextFormField(
                   controller: _priceController,
                   decoration: InputDecoration(
-                    labelText: 'Precio',
+                    labelText: l10n.price, // ✅ TRADUCIDO
                     hintText: '0',
-                    prefixText: '\$ ',
+                    prefixText: '${settingsProvider.currencySymbol} ', // ✅ DINÁMICO
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) =>
-                      value?.isEmpty ?? true ? 'Campo requerido' : null,
+                      value?.isEmpty ?? true ? l10n.requiredField : null, // ✅ TRADUCIDO
                 ),
                 SizedBox(height: 16.h),
 
@@ -338,8 +361,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 TextFormField(
                   controller: _descriptionController,
                   decoration: InputDecoration(
-                    labelText: 'Descripción',
-                    hintText: 'Descripción del producto',
+                    labelText: l10n.description, // ✅ TRADUCIDO
+                    hintText: l10n.descriptionHint, // ✅ TRADUCIDO
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.r),
                     ),
@@ -352,13 +375,16 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 DropdownButtonFormField<String>(
                   value: _category,
                   decoration: InputDecoration(
-                    labelText: 'Categoría',
+                    labelText: l10n.category, // ✅ TRADUCIDO
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
                   items: _categories.map((cat) {
-                    return DropdownMenuItem(value: cat, child: Text(cat));
+                    return DropdownMenuItem(
+                      value: cat,
+                      child: Text(_getCategoryTranslation(cat, l10n)), // ✅ TRADUCIDO
+                    );
                   }).toList(),
                   onChanged: (value) {
                     setState(() {
@@ -372,7 +398,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 TextFormField(
                   controller: _stockController,
                   decoration: InputDecoration(
-                    labelText: 'Stock',
+                    labelText: l10n.stock, // ✅ TRADUCIDO (ahora dice "Cantidad")
                     hintText: '0',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.r),
@@ -380,7 +406,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) =>
-                      value?.isEmpty ?? true ? 'Campo requerido' : null,
+                      value?.isEmpty ?? true ? l10n.requiredField : null, // ✅ TRADUCIDO
                 ),
                 SizedBox(height: 24.h),
 
@@ -396,7 +422,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                         ),
-                        child: const Text('Cancelar'),
+                        child: Text(l10n.cancel), // ✅ TRADUCIDO
                       ),
                     ),
                     SizedBox(width: 12.w),
@@ -410,7 +436,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                         ),
-                        child: const Text('Guardar'),
+                        child: Text(l10n.save), // ✅ TRADUCIDO
                       ),
                     ),
                   ],
@@ -424,6 +450,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
   }
 
   void _saveProduct() {
+    final l10n = AppLocalizations.of(context)!;
+    
     if (_formKey.currentState!.validate()) {
       final product = Product(
         id: widget.product?.id,
@@ -446,7 +474,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
 
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Producto guardado exitosamente')),
+        SnackBar(content: Text(l10n.productSavedSuccess)), // ✅ TRADUCIDO
       );
     }
   }

@@ -12,7 +12,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get appName => 'MeuNegócio';
 
   @override
-  String get dashboard => 'Painel';
+  String get dashboard => 'Painel Principal';
 
   @override
   String get products => 'Produtos';
@@ -21,7 +21,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get orders => 'Pedidos';
 
   @override
-  String get invoices => 'Faturas';
+  String get invoices => 'Notas Fiscais';
 
   @override
   String get settings => 'Configurações';
@@ -51,19 +51,37 @@ class AppLocalizationsPt extends AppLocalizations {
   String get productName => 'Nome do Produto';
 
   @override
+  String get productNameHint => 'Ex: Hambúrguer Clássico';
+
+  @override
   String get price => 'Preço';
 
   @override
   String get description => 'Descrição';
 
   @override
+  String get descriptionHint => 'Descrição do produto';
+
+  @override
   String get category => 'Categoria';
 
   @override
-  String get stock => 'Estoque';
+  String get stock => 'Quantidade';
 
   @override
   String get addImage => 'Adicionar imagem';
+
+  @override
+  String get tapToSelect => 'Toque para selecionar';
+
+  @override
+  String get selectImage => 'Selecionar imagem';
+
+  @override
+  String get gallery => 'Galeria';
+
+  @override
+  String get camera => 'Câmera';
 
   @override
   String get save => 'Salvar';
@@ -84,6 +102,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get download => 'Baixar';
 
   @override
+  String get close => 'Fechar';
+
+  @override
   String get createOrder => 'Criar Pedido';
 
   @override
@@ -96,7 +117,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get clearCart => 'Limpar carrinho';
 
   @override
-  String get createInvoice => 'Criar Fatura';
+  String get createInvoice => 'Criar Nota Fiscal';
 
   @override
   String get customerName => 'Nome do Cliente';
@@ -106,6 +127,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get search => 'Buscar';
+
+  @override
+  String get searchProducts => 'Buscar produtos...';
 
   @override
   String get total => 'Total';
@@ -132,7 +156,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get phone => 'Telefone';
 
   @override
-  String get email => 'Email';
+  String get email => 'E-mail';
 
   @override
   String get address => 'Endereço';
@@ -144,7 +168,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get noOrders => 'Nenhum pedido registrado';
 
   @override
-  String get noInvoices => 'Nenhuma fatura registrada';
+  String get noInvoices => 'Nenhuma nota fiscal registrada';
 
   @override
   String get confirmDelete => 'Confirmar exclusão';
@@ -160,10 +184,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get successSaved => 'Salvo com sucesso';
 
   @override
+  String get productSavedSuccess => 'Produto salvo com sucesso';
+
+  @override
   String get successDeleted => 'Excluído com sucesso';
 
   @override
   String get error => 'Erro';
+
+  @override
+  String get requiredField => 'Campo obrigatório';
 
   @override
   String get food => 'Comida';
@@ -176,4 +206,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get others => 'Outros';
+
+  @override
+  String get galleryPermissionNeeded => 'Permissões de galeria são necessárias';
+
+  @override
+  String get cameraPermissionNeeded => 'Permissões de câmera são necessárias';
+
+  @override
+  String get imageSelected => 'Imagem selecionada';
+
+  @override
+  String get errorSelectingImage => 'Erro ao selecionar imagem';
+
+  @override
+  String get businessManagement => 'Gerenciamento de Produtos e Notas Fiscais';
 }

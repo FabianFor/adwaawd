@@ -27,7 +27,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get productsRegistered => 'Registered Products';
+  String get productsRegistered => 'Products Registered';
 
   @override
   String get ordersPlaced => 'Orders Placed';
@@ -51,19 +51,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productName => 'Product Name';
 
   @override
+  String get productNameHint => 'E.g: Classic Burger';
+
+  @override
   String get price => 'Price';
 
   @override
   String get description => 'Description';
 
   @override
+  String get descriptionHint => 'Product description';
+
+  @override
   String get category => 'Category';
 
   @override
-  String get stock => 'Stock';
+  String get stock => 'Quantity';
 
   @override
   String get addImage => 'Add image';
+
+  @override
+  String get tapToSelect => 'Tap to select';
+
+  @override
+  String get selectImage => 'Select image';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get camera => 'Camera';
 
   @override
   String get save => 'Save';
@@ -82,6 +100,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get download => 'Download';
+
+  @override
+  String get close => 'Close';
 
   @override
   String get createOrder => 'Create Order';
@@ -106,6 +127,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get search => 'Search';
+
+  @override
+  String get searchProducts => 'Search products...';
 
   @override
   String get total => 'Total';
@@ -159,10 +183,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get successSaved => 'Successfully saved';
 
   @override
+  String get productSavedSuccess => 'Product saved successfully';
+
+  @override
   String get successDeleted => 'Successfully deleted';
 
   @override
   String get error => 'Error';
+
+  @override
+  String get requiredField => 'Required field';
 
   @override
   String get food => 'Food';
@@ -175,4 +205,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get others => 'Others';
+
+  @override
+  String get galleryPermissionNeeded => 'Gallery permissions are needed';
+
+  @override
+  String get cameraPermissionNeeded => 'Camera permissions are needed';
+
+  @override
+  String get imageSelected => 'Image selected';
+
+  @override
+  String get errorSelectingImage => 'Error selecting image';
+
+  @override
+  String get businessManagement => 'Product and Invoice Management';
 }

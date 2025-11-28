@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart'; // ✅ CORREGIDO
 import '../providers/product_provider.dart';
 import '../providers/order_provider.dart';
 import '../providers/invoice_provider.dart';
+import '../providers/settings_provider.dart'; // ✅ AGREGADO
 import '../models/order.dart';
 import 'dart:io';
 
@@ -26,8 +28,25 @@ class _OrdersScreenState extends State<OrdersScreen> {
     super.dispose();
   }
 
+  String _getCategoryTranslation(String categoryKey, AppLocalizations l10n) {
+    switch (categoryKey) {
+      case 'food':
+        return l10n.food;
+      case 'drinks':
+        return l10n.drinks;
+      case 'desserts':
+        return l10n.desserts;
+      case 'others':
+        return l10n.others;
+      default:
+        return categoryKey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // ✅ AGREGADO
+    final settingsProvider = Provider.of<SettingsProvider>(context); // ✅ AGREGADO
     final productProvider = Provider.of<ProductProvider>(context);
     final orderProvider = Provider.of<OrderProvider>(context);
 
@@ -39,7 +58,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Crear Pedido', style: TextStyle(fontSize: 18.sp)),
+        title: Text(l10n.createOrder, style: TextStyle(fontSize: 18.sp)), // ✅ TRADUCIDO
         backgroundColor: const Color(0xFF2196F3),
         foregroundColor: Colors.white,
         actions: [
@@ -75,12 +94,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 ],
               ),
               onPressed: () => _showCurrentOrderSheet(context),
-              tooltip: 'Ver carrito',
+              tooltip: l10n.viewCart, // ✅ TRADUCIDO
             ),
             IconButton(
               icon: Icon(Icons.delete_sweep, size: 24.sp),
               onPressed: () => _confirmClearOrder(context),
-              tooltip: 'Vaciar carrito',
+              tooltip: l10n.clearCart, // ✅ TRADUCIDO
             ),
           ],
         ],
@@ -98,7 +117,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 });
               },
               decoration: InputDecoration(
-                hintText: 'Buscar productos...',
+                hintText: l10n.searchProducts, // ✅ TRADUCIDO
                 hintStyle: TextStyle(fontSize: 14.sp),
                 prefixIcon: Icon(Icons.search, size: 20.sp),
                 suffixIcon: _searchQuery.isNotEmpty
@@ -142,8 +161,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         SizedBox(height: 16.h),
                         Text(
                           _searchQuery.isNotEmpty
-                              ? 'No se encontraron productos'
-                              : 'No hay productos disponibles',
+                              ? _getNoProductsFoundText(l10n) // ✅ TRADUCIDO
+                              : l10n.noProducts, // ✅ TRADUCIDO
                           style: TextStyle(fontSize: 18.sp, color: Colors.grey),
                         ),
                         if (_searchQuery.isNotEmpty) ...[
@@ -155,7 +174,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               });
                             },
                             icon: Icon(Icons.clear, size: 18.sp),
-                            label: Text('Limpiar búsqueda',
+                            label: Text(_getClearSearchText(l10n), // ✅ TRADUCIDO
                                 style: TextStyle(fontSize: 14.sp)),
                           ),
                         ],
@@ -222,7 +241,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     borderRadius: BorderRadius.circular(12.r),
                                   ),
                                   child: Text(
-                                    'En carrito',
+                                    _getInCartText(l10n), // ✅ TRADUCIDO
                                     style: TextStyle(
                                       fontSize: 10.sp,
                                       color: Colors.white,
@@ -236,7 +255,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '\$${product.price.toStringAsFixed(0)}',
+                                settingsProvider.formatPrice(product.price), // ✅ MONEDA DINÁMICA
                                 style: TextStyle(
                                   fontSize: 16.sp,
                                   color: const Color(0xFF4CAF50),
@@ -246,7 +265,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               Row(
                                 children: [
                                   Text(
-                                    product.category,
+                                    _getCategoryTranslation(product.category, l10n), // ✅ TRADUCIDO
                                     style: TextStyle(
                                       fontSize: 12.sp,
                                       color: Colors.grey,
@@ -254,7 +273,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   ),
                                   SizedBox(width: 8.w),
                                   Text(
-                                    'Stock: ${product.stock}',
+                                    '${l10n.stock}: ${product.stock}', // ✅ TRADUCIDO
                                     style: TextStyle(
                                       fontSize: 12.sp,
                                       color: product.stock <= 5
@@ -289,7 +308,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     if (added) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: Text('${product.name} agregado',
+                                          content: Text('${product.name} ${_getAddedText(l10n)}',
                                               style: TextStyle(fontSize: 14.sp)),
                                           duration: const Duration(seconds: 1),
                                           behavior: SnackBarBehavior.floating,
@@ -299,7 +318,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                              '❌ Stock insuficiente para ${product.name}',
+                                              '❌ ${_getInsufficientStockText(l10n)} ${product.name}',
                                               style: TextStyle(fontSize: 14.sp)),
                                           backgroundColor: Colors.red,
                                           duration: const Duration(seconds: 2),
@@ -321,7 +340,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               ),
                             ),
                             child: Text(
-                              product.stock > 0 ? '+ Agregar' : 'Sin stock',
+                              product.stock > 0 ? '+ ${l10n.addProduct}' : _getNoStockText(l10n), // ✅ TRADUCIDO
                               style: TextStyle(fontSize: 12.sp),
                             ),
                           ),
@@ -354,14 +373,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Items: ${orderProvider.currentOrderItems.length}',
+                            '${_getItemsText(l10n)}: ${orderProvider.currentOrderItems.length}', // ✅ TRADUCIDO
                             style: TextStyle(
                               fontSize: 14.sp,
                               color: Colors.grey[600],
                             ),
                           ),
                           Text(
-                            'Total: \$${orderProvider.currentOrderTotal.toStringAsFixed(0)}',
+                            '${l10n.total}: ${settingsProvider.formatPrice(orderProvider.currentOrderTotal)}', // ✅ MONEDA DINÁMICA
                             style: TextStyle(
                               fontSize: 20.sp,
                               fontWeight: FontWeight.bold,
@@ -375,7 +394,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           OutlinedButton.icon(
                             onPressed: () => _showCurrentOrderSheet(context),
                             icon: Icon(Icons.visibility, size: 18.sp),
-                            label: Text('Ver', style: TextStyle(fontSize: 13.sp)),
+                            label: Text(_getViewText(l10n), style: TextStyle(fontSize: 13.sp)), // ✅ TRADUCIDO
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF2196F3),
                               padding: EdgeInsets.symmetric(
@@ -388,7 +407,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           ElevatedButton.icon(
                             onPressed: () => _showCreateInvoiceDialog(context),
                             icon: Icon(Icons.receipt_long, size: 18.sp),
-                            label: Text('Crear Boleta',
+                            label: Text(l10n.createInvoice, // ✅ TRADUCIDO
                                 style: TextStyle(fontSize: 13.sp)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF4CAF50),
@@ -409,8 +428,130 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
     );
   }
+  // ✅ Funciones helper para traducciones
+  String _getNoProductsFoundText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'No se encontraron productos';
+      case 'en':
+        return 'No products found';
+      case 'pt':
+        return 'Nenhum produto encontrado';
+      case 'zh':
+        return '未找到产品';
+      default:
+        return 'No products found';
+    }
+  }
+
+  String _getClearSearchText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Limpiar búsqueda';
+      case 'en':
+        return 'Clear search';
+      case 'pt':
+        return 'Limpar pesquisa';
+      case 'zh':
+        return '清除搜索';
+      default:
+        return 'Clear search';
+    }
+  }
+
+  String _getInCartText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'En carrito';
+      case 'en':
+        return 'In cart';
+      case 'pt':
+        return 'No carrinho';
+      case 'zh':
+        return '在购物车中';
+      default:
+        return 'In cart';
+    }
+  }
+
+  String _getAddedText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'agregado';
+      case 'en':
+        return 'added';
+      case 'pt':
+        return 'adicionado';
+      case 'zh':
+        return '已添加';
+      default:
+        return 'added';
+    }
+  }
+
+  String _getInsufficientStockText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Stock insuficiente para';
+      case 'en':
+        return 'Insufficient stock for';
+      case 'pt':
+        return 'Estoque insuficiente para';
+      case 'zh':
+        return '库存不足';
+      default:
+        return 'Insufficient stock for';
+    }
+  }
+
+  String _getNoStockText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Sin stock';
+      case 'en':
+        return 'Out of stock';
+      case 'pt':
+        return 'Sem estoque';
+      case 'zh':
+        return '缺货';
+      default:
+        return 'Out of stock';
+    }
+  }
+
+  String _getItemsText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Items';
+      case 'en':
+        return 'Items';
+      case 'pt':
+        return 'Itens';
+      case 'zh':
+        return '项目';
+      default:
+        return 'Items';
+    }
+  }
+
+  String _getViewText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Ver';
+      case 'en':
+        return 'View';
+      case 'pt':
+        return 'Ver';
+      case 'zh':
+        return '查看';
+      default:
+        return 'View';
+    }
+  }
 
   void _showCurrentOrderSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
     final productProvider = Provider.of<ProductProvider>(context, listen: false);
     
     showModalBottomSheet(
@@ -444,7 +585,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Carrito de Pedido',
+                          _getOrderCartText(l10n), // ✅ TRADUCIDO
                           style: TextStyle(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
@@ -461,7 +602,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       child: provider.currentOrderItems.isEmpty
                           ? Center(
                               child: Text(
-                                'El carrito está vacío',
+                                _getEmptyCartText(l10n), // ✅ TRADUCIDO
                                 style: TextStyle(
                                   fontSize: 16.sp,
                                   color: Colors.grey,
@@ -500,7 +641,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    'Stock disponible: $availableStock',
+                                                    '${_getAvailableStockText(l10n)}: $availableStock', // ✅ TRADUCIDO
                                                     style: TextStyle(
                                                       fontSize: 12.sp,
                                                       color: Colors.grey[600],
@@ -568,7 +709,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                           .showSnackBar(
                                                         SnackBar(
                                                           content: Text(
-                                                              '❌ Stock insuficiente. Disponible: $availableStock',
+                                                              '❌ ${_getInsufficientStockText(l10n)}. ${_getAvailableText(l10n)}: $availableStock',
                                                               style: TextStyle(
                                                                   fontSize: 14.sp)),
                                                           backgroundColor: Colors.red,
@@ -592,14 +733,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                   CrossAxisAlignment.end,
                                               children: [
                                                 Text(
-                                                  '\$${item.price.toStringAsFixed(0)} c/u',
+                                                  '${settingsProvider.formatPrice(item.price)} ${_getEachText(l10n)}', // ✅ MONEDA DINÁMICA
                                                   style: TextStyle(
                                                     fontSize: 12.sp,
                                                     color: Colors.grey[600],
                                                   ),
                                                 ),
                                                 Text(
-                                                  '\$${item.total.toStringAsFixed(0)}',
+                                                  settingsProvider.formatPrice(item.total), // ✅ MONEDA DINÁMICA
                                                   style: TextStyle(
                                                     fontSize: 18.sp,
                                                     fontWeight: FontWeight.bold,
@@ -628,14 +769,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Total:',
+                            '${l10n.total}:',
                             style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            '\$${provider.currentOrderTotal.toStringAsFixed(0)}',
+                            settingsProvider.formatPrice(provider.currentOrderTotal), // ✅ MONEDA DINÁMICA
                             style: TextStyle(
                               fontSize: 24.sp,
                               fontWeight: FontWeight.bold,
@@ -661,7 +802,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
                             ),
-                            child: Text('Vaciar', style: TextStyle(fontSize: 15.sp)),
+                            child: Text(_getEmptyText(l10n), style: TextStyle(fontSize: 15.sp)), // ✅ TRADUCIDO
                           ),
                         ),
                         SizedBox(width: 12.w),
@@ -679,7 +820,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
                             ),
-                            child: Text('Crear Boleta',
+                            child: Text(l10n.createInvoice,
                                 style: TextStyle(fontSize: 15.sp)),
                           ),
                         ),
@@ -695,7 +836,100 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
+  // Más funciones helper para traducciones
+  String _getOrderCartText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Carrito de Pedido';
+      case 'en':
+        return 'Order Cart';
+      case 'pt':
+        return 'Carrinho de Pedido';
+      case 'zh':
+        return '订单购物车';
+      default:
+        return 'Order Cart';
+    }
+  }
+
+  String _getEmptyCartText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'El carrito está vacío';
+      case 'en':
+        return 'Cart is empty';
+      case 'pt':
+        return 'O carrinho está vazio';
+      case 'zh':
+        return '购物车是空的';
+      default:
+        return 'Cart is empty';
+    }
+  }
+
+  String _getAvailableStockText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Stock disponible';
+      case 'en':
+        return 'Available stock';
+      case 'pt':
+        return 'Estoque disponível';
+      case 'zh':
+        return '可用库存';
+      default:
+        return 'Available stock';
+    }
+  }
+
+  String _getAvailableText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Disponible';
+      case 'en':
+        return 'Available';
+      case 'pt':
+        return 'Disponível';
+      case 'zh':
+        return '可用';
+      default:
+        return 'Available';
+    }
+  }
+
+  String _getEachText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'c/u';
+      case 'en':
+        return 'each';
+      case 'pt':
+        return 'cada';
+      case 'zh':
+        return '每个';
+      default:
+        return 'each';
+    }
+  }
+
+  String _getEmptyText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Vaciar';
+      case 'en':
+        return 'Empty';
+      case 'pt':
+        return 'Esvaziar';
+      case 'zh':
+        return '清空';
+      default:
+        return 'Empty';
+    }
+  }
+
   void _confirmClearOrder(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -704,17 +938,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 24.sp),
             SizedBox(width: 12.w),
-            Text('Vaciar carrito', style: TextStyle(fontSize: 18.sp)),
+            Text(_getEmptyCartTitleText(l10n), style: TextStyle(fontSize: 18.sp)),
           ],
         ),
         content: Text(
-          '¿Estás seguro de vaciar el carrito? Se perderán todos los items.',
+          _getEmptyCartConfirmText(l10n),
           style: TextStyle(fontSize: 15.sp),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar', style: TextStyle(fontSize: 14.sp)),
+            child: Text(l10n.cancel, style: TextStyle(fontSize: 14.sp)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -722,7 +956,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Carrito vaciado',
+                  content: Text(_getCartClearedText(l10n),
                       style: TextStyle(fontSize: 14.sp)),
                   duration: const Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
@@ -733,28 +967,75 @@ class _OrdersScreenState extends State<OrdersScreen> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: Text('Vaciar', style: TextStyle(fontSize: 14.sp)),
+            child: Text(_getEmptyText(l10n), style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),
     );
   }
 
+  String _getEmptyCartTitleText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Vaciar carrito';
+      case 'en':
+        return 'Empty cart';
+      case 'pt':
+        return 'Esvaziar carrinho';
+      case 'zh':
+        return '清空购物车';
+      default:
+        return 'Empty cart';
+    }
+  }
+
+  String _getEmptyCartConfirmText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return '¿Estás seguro de vaciar el carrito? Se perderán todos los items.';
+      case 'en':
+        return 'Are you sure you want to empty the cart? All items will be lost.';
+      case 'pt':
+        return 'Tem certeza de que deseja esvaziar o carrinho? Todos os itens serão perdidos.';
+      case 'zh':
+        return '您确定要清空购物车吗？所有项目将丢失。';
+      default:
+        return 'Are you sure you want to empty the cart? All items will be lost.';
+    }
+  }
+
+  String _getCartClearedText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Carrito vaciado';
+      case 'en':
+        return 'Cart cleared';
+      case 'pt':
+        return 'Carrinho esvaziado';
+      case 'zh':
+        return '购物车已清空';
+      default:
+        return 'Cart cleared';
+    }
+  }
+
   void _showCreateInvoiceDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: Text('Crear Boleta', style: TextStyle(fontSize: 18.sp)),
+        title: Text(l10n.createInvoice, style: TextStyle(fontSize: 18.sp)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _customerNameController,
               decoration: InputDecoration(
-                labelText: 'Nombre del Cliente *',
+                labelText: _getCustomerNameRequiredText(l10n), // ✅ TRADUCIDO
                 labelStyle: TextStyle(fontSize: 14.sp),
-                hintText: 'Ej: Juan Pérez',
+                hintText: _getCustomerNameHintText(l10n), // ✅ TRADUCIDO
                 hintStyle: TextStyle(fontSize: 14.sp),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),
@@ -772,7 +1053,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             TextField(
               controller: _customerPhoneController,
               decoration: InputDecoration(
-                labelText: 'Teléfono (opcional)',
+                labelText: _getPhoneOptionalText(l10n), // ✅ TRADUCIDO
                 labelStyle: TextStyle(fontSize: 14.sp),
                 hintText: '123456789',
                 hintStyle: TextStyle(fontSize: 14.sp),
@@ -793,7 +1074,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar', style: TextStyle(fontSize: 14.sp)),
+            child: Text(l10n.cancel, style: TextStyle(fontSize: 14.sp)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -801,7 +1082,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      '⚠️ Por favor ingresa el nombre del cliente',
+                      '⚠️ ${_getPleaseEnterCustomerNameText(l10n)}',
                       style: TextStyle(fontSize: 14.sp),
                     ),
                     backgroundColor: Colors.orange,
@@ -842,14 +1123,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 );
               }
 
-              // ✅ ARREGLADO: Crear boleta con COPIA de items
+              // Crear boleta
               await invoiceProvider.createInvoice(
                 customerName: _customerNameController.text.trim(),
                 customerPhone: _customerPhoneController.text.trim(),
-                items: orderProvider.getCurrentOrderItemsCopy(), // ✅ Copia, no referencia
+                items: orderProvider.getCurrentOrderItemsCopy(),
               );
 
-              // Limpiar carrito DESPUÉS de crear la boleta
               orderProvider.clearCurrentOrder();
               _customerNameController.clear();
               _customerPhoneController.clear();
@@ -864,7 +1144,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         SizedBox(width: 8.w),
                         Expanded(
                           child: Text(
-                            '✅ Boleta creada y stock actualizado',
+                            '✅ ${_getInvoiceCreatedText(l10n)}',
                             style: TextStyle(fontSize: 14.sp),
                           ),
                         ),
@@ -880,10 +1160,100 @@ class _OrdersScreenState extends State<OrdersScreen> {
               backgroundColor: const Color(0xFF4CAF50),
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
             ),
-            child: Text('Crear', style: TextStyle(fontSize: 14.sp)),
+            child: Text(_getCreateText(l10n), style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),
     );
+  }
+
+  String _getCustomerNameRequiredText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Nombre del Cliente *';
+      case 'en':
+        return 'Customer Name *';
+      case 'pt':
+        return 'Nome do Cliente *';
+      case 'zh':
+        return '客户姓名 *';
+      default:
+        return 'Customer Name *';
+    }
+  }
+
+  String _getCustomerNameHintText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Ej: Juan Pérez';
+      case 'en':
+        return 'E.g: John Doe';
+      case 'pt':
+        return 'Ex: João Silva';
+      case 'zh':
+        return '例如：张三';
+      default:
+        return 'E.g: John Doe';
+    }
+  }
+
+  String _getPhoneOptionalText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Teléfono (opcional)';
+      case 'en':
+        return 'Phone (optional)';
+      case 'pt':
+        return 'Telefone (opcional)';
+      case 'zh':
+        return '电话（可选）';
+      default:
+        return 'Phone (optional)';
+    }
+  }
+
+  String _getPleaseEnterCustomerNameText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Por favor ingresa el nombre del cliente';
+      case 'en':
+        return 'Please enter customer name';
+      case 'pt':
+        return 'Por favor insira o nome do cliente';
+      case 'zh':
+        return '请输入客户姓名';
+      default:
+        return 'Please enter customer name';
+    }
+  }
+
+  String _getInvoiceCreatedText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Boleta creada y stock actualizado';
+      case 'en':
+        return 'Invoice created and stock updated';
+      case 'pt':
+        return 'Nota fiscal criada e estoque atualizado';
+      case 'zh':
+        return '发票已创建，库存已更新';
+      default:
+        return 'Invoice created and stock updated';
+    }
+  }
+
+  String _getCreateText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Crear';
+      case 'en':
+        return 'Create';
+      case 'pt':
+        return 'Criar';
+      case 'zh':
+        return '创建';
+      default:
+        return 'Create';
+    }
   }
 }

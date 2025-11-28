@@ -8,7 +8,7 @@
   "invoices": "Invoices",
   "settings": "Settings",
   
-  "productsRegistered": "Registered Products",
+  "productsRegistered": "Products Registered",
   "ordersPlaced": "Orders Placed",
   "totalRevenue": "Total Revenue",
   
@@ -18,11 +18,17 @@
   "deleteProduct": "Delete Product",
   
   "productName": "Product Name",
+  "productNameHint": "E.g: Classic Burger",
   "price": "Price",
   "description": "Description",
+  "descriptionHint": "Product description",
   "category": "Category",
-  "stock": "Stock",
+  "stock": "Quantity",
   "addImage": "Add image",
+  "tapToSelect": "Tap to select",
+  "selectImage": "Select image",
+  "gallery": "Gallery",
+  "camera": "Camera",
   
   "save": "Save",
   "cancel": "Cancel",
@@ -30,6 +36,7 @@
   "edit": "Edit",
   "share": "Share",
   "download": "Download",
+  "close": "Close",
   
   "createOrder": "Create Order",
   "cart": "Cart",
@@ -40,6 +47,7 @@
   "customerName": "Customer Name",
   "customerPhone": "Phone",
   "search": "Search",
+  "searchProducts": "Search products...",
   
   "total": "Total",
   "quantity": "Quantity",
@@ -62,11 +70,20 @@
   "cannotUndo": "This action cannot be undone",
   
   "successSaved": "Successfully saved",
+  "productSavedSuccess": "Product saved successfully",
   "successDeleted": "Successfully deleted",
   "error": "Error",
+  "requiredField": "Required field",
   
   "food": "Food",
   "drinks": "Drinks",
   "desserts": "Desserts",
-  "others": "Others"
+  "others": "Others",
+  
+  "galleryPermissionNeeded": "Gallery permissions are needed",
+  "cameraPermissionNeeded": "Camera permissions are needed",
+  "imageSelected": "Image selected",
+  "errorSelectingImage": "Error selecting image",
+  
+  "businessManagement": "Product and Invoice Management"
 }

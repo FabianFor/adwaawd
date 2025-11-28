@@ -2,10 +2,10 @@
   "@@locale": "pt",
   
   "appName": "MeuNegócio",
-  "dashboard": "Painel",
+  "dashboard": "Painel Principal",
   "products": "Produtos",
   "orders": "Pedidos",
-  "invoices": "Faturas",
+  "invoices": "Notas Fiscais",
   "settings": "Configurações",
   
   "productsRegistered": "Produtos Registrados",
@@ -18,11 +18,17 @@
   "deleteProduct": "Excluir Produto",
   
   "productName": "Nome do Produto",
+  "productNameHint": "Ex: Hambúrguer Clássico",
   "price": "Preço",
   "description": "Descrição",
+  "descriptionHint": "Descrição do produto",
   "category": "Categoria",
-  "stock": "Estoque",
+  "stock": "Quantidade",
   "addImage": "Adicionar imagem",
+  "tapToSelect": "Toque para selecionar",
+  "selectImage": "Selecionar imagem",
+  "gallery": "Galeria",
+  "camera": "Câmera",
   
   "save": "Salvar",
   "cancel": "Cancelar",
@@ -30,16 +36,18 @@
   "edit": "Editar",
   "share": "Compartilhar",
   "download": "Baixar",
+  "close": "Fechar",
   
   "createOrder": "Criar Pedido",
   "cart": "Carrinho",
   "viewCart": "Ver carrinho",
   "clearCart": "Limpar carrinho",
-  "createInvoice": "Criar Fatura",
+  "createInvoice": "Criar Nota Fiscal",
   
   "customerName": "Nome do Cliente",
   "customerPhone": "Telefone",
   "search": "Buscar",
+  "searchProducts": "Buscar produtos...",
   
   "total": "Total",
   "quantity": "Quantidade",
@@ -50,23 +58,32 @@
   "businessProfile": "Perfil do Negócio",
   "businessName": "Nome do Negócio",
   "phone": "Telefone",
-  "email": "Email",
+  "email": "E-mail",
   "address": "Endereço",
   
   "noProducts": "Nenhum produto registrado",
   "noOrders": "Nenhum pedido registrado",
-  "noInvoices": "Nenhuma fatura registrada",
+  "noInvoices": "Nenhuma nota fiscal registrada",
   
   "confirmDelete": "Confirmar exclusão",
   "deleteConfirmation": "Tem certeza de que deseja excluir este item?",
   "cannotUndo": "Esta ação não pode ser desfeita",
   
   "successSaved": "Salvo com sucesso",
+  "productSavedSuccess": "Produto salvo com sucesso",
   "successDeleted": "Excluído com sucesso",
   "error": "Erro",
+  "requiredField": "Campo obrigatório",
   
   "food": "Comida",
   "drinks": "Bebidas",
   "desserts": "Sobremesas",
-  "others": "Outros"
+  "others": "Outros",
+  
+  "galleryPermissionNeeded": "Permissões de galeria são necessárias",
+  "cameraPermissionNeeded": "Permissões de câmera são necessárias",
+  "imageSelected": "Imagem selecionada",
+  "errorSelectingImage": "Erro ao selecionar imagem",
+  
+  "businessManagement": "Gerenciamento de Produtos e Notas Fiscais"
 }

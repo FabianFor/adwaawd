@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart'; // ✅ CORREGIDO
 import '../providers/business_provider.dart';
 import '../providers/product_provider.dart';
 import '../providers/order_provider.dart';
@@ -99,7 +99,7 @@ class DashboardHome extends StatelessWidget {
                           ),
                           SizedBox(height: 4.h),
                           Text(
-                            'Gestión de Productos y Boletas',
+                            l10n.businessManagement, // ✅ TRADUCIDO
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.9),
                               fontSize: 14.sp,
@@ -150,7 +150,7 @@ class DashboardHome extends StatelessWidget {
                     SizedBox(height: 16.h),
                     DashboardCard(
                       title: l10n.totalRevenue,
-                      value: settingsProvider.formatPrice(invoiceProvider.totalRevenue),
+                      value: settingsProvider.formatPrice(invoiceProvider.totalRevenue), // ✅ MONEDA DINÁMICA
                       color: const Color(0xFF9C27B0),
                       icon: Icons.attach_money,
                     ),

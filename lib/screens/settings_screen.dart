@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart'; // ✅ CORREGIDO
 import '../providers/settings_provider.dart';
 import 'profile_screen.dart';
 
@@ -26,8 +26,8 @@ class SettingsScreen extends StatelessWidget {
           _buildSectionHeader(
             context,
             icon: Icons.attach_money,
-            title: l10n.currency,
-            subtitle: 'Selecciona tu moneda preferida',
+            title: l10n.currency, // ✅ TRADUCIDO
+            subtitle: _getCurrencySubtitle(l10n), // ✅ TRADUCIDO
           ),
           
           _buildCurrencyTile(
@@ -42,8 +42,8 @@ class SettingsScreen extends StatelessWidget {
           _buildSectionHeader(
             context,
             icon: Icons.language,
-            title: l10n.language,
-            subtitle: 'Selecciona tu idioma preferido',
+            title: l10n.language, // ✅ TRADUCIDO
+            subtitle: _getLanguageSubtitle(l10n), // ✅ TRADUCIDO
           ),
           
           _buildLanguageTile(
@@ -58,8 +58,8 @@ class SettingsScreen extends StatelessWidget {
           _buildSectionHeader(
             context,
             icon: Icons.store,
-            title: l10n.businessProfile,
-            subtitle: 'Configura la información de tu negocio',
+            title: l10n.businessProfile, // ✅ TRADUCIDO
+            subtitle: _getBusinessSubtitle(l10n), // ✅ TRADUCIDO
           ),
           
           ListTile(
@@ -76,11 +76,11 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             title: Text(
-              'Editar perfil',
+              _getEditProfileText(l10n), // ✅ TRADUCIDO
               style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
             ),
             subtitle: Text(
-              'Nombre, logo, contacto, etc.',
+              _getEditProfileSubtitle(l10n), // ✅ TRADUCIDO
               style: TextStyle(fontSize: 13.sp, color: Colors.grey[600]),
             ),
             trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
@@ -110,6 +110,82 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  // ✅ Funciones helper para traducciones dinámicas
+  String _getCurrencySubtitle(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Selecciona tu moneda preferida';
+      case 'en':
+        return 'Select your preferred currency';
+      case 'pt':
+        return 'Selecione sua moeda preferida';
+      case 'zh':
+        return '选择您的首选货币';
+      default:
+        return 'Select your preferred currency';
+    }
+  }
+
+  String _getLanguageSubtitle(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Selecciona tu idioma preferido';
+      case 'en':
+        return 'Select your preferred language';
+      case 'pt':
+        return 'Selecione seu idioma preferido';
+      case 'zh':
+        return '选择您的首选语言';
+      default:
+        return 'Select your preferred language';
+    }
+  }
+
+  String _getBusinessSubtitle(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Configura la información de tu negocio';
+      case 'en':
+        return 'Configure your business information';
+      case 'pt':
+        return 'Configure as informações do seu negócio';
+      case 'zh':
+        return '配置您的业务信息';
+      default:
+        return 'Configure your business information';
+    }
+  }
+
+  String _getEditProfileText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Editar perfil';
+      case 'en':
+        return 'Edit profile';
+      case 'pt':
+        return 'Editar perfil';
+      case 'zh':
+        return '编辑资料';
+      default:
+        return 'Edit profile';
+    }
+  }
+
+  String _getEditProfileSubtitle(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Nombre, logo, contacto, etc.';
+      case 'en':
+        return 'Name, logo, contact, etc.';
+      case 'pt':
+        return 'Nome, logo, contato, etc.';
+      case 'zh':
+        return '名称、徽标、联系方式等';
+      default:
+        return 'Name, logo, contact, etc.';
+    }
   }
 
   Widget _buildSectionHeader(
@@ -216,6 +292,7 @@ class SettingsScreen extends StatelessWidget {
 
   void _showCurrencySelector(BuildContext context) {
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
     
     showModalBottomSheet(
       context: context,
@@ -237,7 +314,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             SizedBox(height: 20.h),
             Text(
-              'Seleccionar Moneda',
+              _getSelectCurrencyText(l10n), // ✅ TRADUCIDO
               style: TextStyle(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -274,7 +351,7 @@ class SettingsScreen extends StatelessWidget {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('✅ Moneda cambiada a ${currency['name']}'),
+                          content: Text('✅ ${_getCurrencyChangedText(l10n)} ${currency['name']}'),
                           duration: const Duration(seconds: 2),
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -292,6 +369,7 @@ class SettingsScreen extends StatelessWidget {
 
   void _showLanguageSelector(BuildContext context) {
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
     
     showModalBottomSheet(
       context: context,
@@ -313,7 +391,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             SizedBox(height: 20.h),
             Text(
-              'Seleccionar Idioma',
+              _getSelectLanguageText(l10n), // ✅ TRADUCIDO
               style: TextStyle(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -346,7 +424,7 @@ class SettingsScreen extends StatelessWidget {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('✅ Idioma cambiado a ${language['name']}'),
+                      content: Text('✅ ${_getLanguageChangedText(l10n)} ${language['name']}'),
                       duration: const Duration(seconds: 2),
                       behavior: SnackBarBehavior.floating,
                     ),
@@ -358,5 +436,65 @@ class SettingsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getSelectCurrencyText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Seleccionar Moneda';
+      case 'en':
+        return 'Select Currency';
+      case 'pt':
+        return 'Selecionar Moeda';
+      case 'zh':
+        return '选择货币';
+      default:
+        return 'Select Currency';
+    }
+  }
+
+  String _getSelectLanguageText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Seleccionar Idioma';
+      case 'en':
+        return 'Select Language';
+      case 'pt':
+        return 'Selecionar Idioma';
+      case 'zh':
+        return '选择语言';
+      default:
+        return 'Select Language';
+    }
+  }
+
+  String _getCurrencyChangedText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Moneda cambiada a';
+      case 'en':
+        return 'Currency changed to';
+      case 'pt':
+        return 'Moeda alterada para';
+      case 'zh':
+        return '货币已更改为';
+      default:
+        return 'Currency changed to';
+    }
+  }
+
+  String _getLanguageChangedText(AppLocalizations l10n) {
+    switch (l10n.localeName) {
+      case 'es':
+        return 'Idioma cambiado a';
+      case 'en':
+        return 'Language changed to';
+      case 'pt':
+        return 'Idioma alterado para';
+      case 'zh':
+        return '语言已更改为';
+      default:
+        return 'Language changed to';
+    }
   }
 }

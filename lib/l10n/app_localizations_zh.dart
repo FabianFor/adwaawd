@@ -51,19 +51,37 @@ class AppLocalizationsZh extends AppLocalizations {
   String get productName => '产品名称';
 
   @override
+  String get productNameHint => '例如：经典汉堡';
+
+  @override
   String get price => '价格';
 
   @override
   String get description => '描述';
 
   @override
+  String get descriptionHint => '产品描述';
+
+  @override
   String get category => '类别';
 
   @override
-  String get stock => '库存';
+  String get stock => '数量';
 
   @override
   String get addImage => '添加图片';
+
+  @override
+  String get tapToSelect => '点击选择';
+
+  @override
+  String get selectImage => '选择图片';
+
+  @override
+  String get gallery => '图库';
+
+  @override
+  String get camera => '相机';
 
   @override
   String get save => '保存';
@@ -82,6 +100,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get download => '下载';
+
+  @override
+  String get close => '关闭';
 
   @override
   String get createOrder => '创建订单';
@@ -108,6 +129,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get search => '搜索';
 
   @override
+  String get searchProducts => '搜索产品...';
+
+  @override
   String get total => '总计';
 
   @override
@@ -126,7 +150,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get businessProfile => '商业资料';
 
   @override
-  String get businessName => '商家名称';
+  String get businessName => '商业名称';
 
   @override
   String get phone => '电话';
@@ -138,19 +162,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get address => '地址';
 
   @override
-  String get noProducts => '没有注册产品';
+  String get noProducts => '没有注册的产品';
 
   @override
-  String get noOrders => '没有注册订单';
+  String get noOrders => '没有注册的订单';
 
   @override
-  String get noInvoices => '没有注册发票';
+  String get noInvoices => '没有注册的发票';
 
   @override
   String get confirmDelete => '确认删除';
 
   @override
-  String get deleteConfirmation => '您确定要删除此项吗？';
+  String get deleteConfirmation => '您确定要删除此项目吗？';
 
   @override
   String get cannotUndo => '此操作无法撤消';
@@ -159,13 +183,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get successSaved => '保存成功';
 
   @override
+  String get productSavedSuccess => '产品保存成功';
+
+  @override
   String get successDeleted => '删除成功';
 
   @override
   String get error => '错误';
 
   @override
-  String get food => '食品';
+  String get requiredField => '必填字段';
+
+  @override
+  String get food => '食物';
 
   @override
   String get drinks => '饮料';
@@ -175,4 +205,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get others => '其他';
+
+  @override
+  String get galleryPermissionNeeded => '需要图库权限';
+
+  @override
+  String get cameraPermissionNeeded => '需要相机权限';
+
+  @override
+  String get imageSelected => '图片已选择';
+
+  @override
+  String get errorSelectingImage => '选择图片时出错';
+
+  @override
+  String get businessManagement => '产品和发票管理';
 }
