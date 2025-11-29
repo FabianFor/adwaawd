@@ -1,27 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <!-- Permisos necesarios según versión de Android -->
     <uses-permission android:name="android.permission.INTERNET"/>
-    
-    <!-- Android 13+ (API 33+) - Solo lectura de imágenes -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    
-    <!-- Android 10-12 (API 29-32) - Scoped Storage -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" 
-        android:maxSdkVersion="32"/>
-    
-    <!-- Android 9 y anteriores (API 28-) -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
-        android:maxSdkVersion="29"
-        tools:ignore="ScopedStorage"/>
-    
-    <!-- Cámara -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     
-    <!-- Features opcionales -->
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
     
     <application
         android:label="MiNegocio"
@@ -33,7 +18,6 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -41,20 +25,18 @@
             
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+              android:resource="@style/NormalTheme"/>
             
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                ategory android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         
         <meta-data
             android:name="flutterEmbedding"
-            android:value="2" />
+            android:value="2"/>
             
-        <!-- FileProvider para compartir archivos en Android 7+ -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -62,25 +44,14 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+                android:resource="@xml/file_paths"/>
         </provider>
     </application>
     
-    <!-- Queries para Android 11+ -->
     <queries>
-        <!-- Compartir imágenes -->
         <intent>
-            <action android:name="android.intent.action.SEND" />
-            <data android:mimeType="image/*" />
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.SEND_MULTIPLE" />
-            <data android:mimeType="image/*" />
-        </intent>
-        <!-- Ver archivos -->
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:mimeType="*/*" />
+            <action android:name="android.intent.action.SEND"/>
+            <data android:mimeType="image/*"/>
         </intent>
     </queries>
 </manifest>
