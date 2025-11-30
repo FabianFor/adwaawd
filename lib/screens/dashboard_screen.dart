@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../core/constants/app_colors.dart';
+import '../core/constants/app_spacing.dart';
+import '../core/constants/app_typography.dart';
+import '../core/utils/responsive_helper.dart';
 import '../providers/business_provider.dart';
 import '../providers/product_provider.dart';
 import '../providers/order_provider.dart';
@@ -24,10 +28,6 @@ class DashboardScreen extends StatelessWidget {
     final invoiceProvider = context.watch<InvoiceProvider>();
     final settingsProvider = context.watch<SettingsProvider>();
 
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isTablet = screenWidth >= 600;
-    final isLargeTablet = screenWidth >= 900;
-
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -36,10 +36,10 @@ class DashboardScreen extends StatelessWidget {
               // Header con gradiente
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(isTablet ? 32 : 20),
+                padding: AppSpacing.paddingXL,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
+                    colors: AppColors.primaryGradient,
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -51,18 +51,15 @@ class DashboardScreen extends StatelessWidget {
                       businessProvider.profile.businessName.isEmpty
                           ? 'MiNegocio'
                           : businessProvider.profile.businessName,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: isLargeTablet ? 32 : (isTablet ? 28 : 24),
-                        fontWeight: FontWeight.bold,
+                      style: AppTypography.h2.copyWith(
+                        color: AppColors.textLight,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: AppSpacing.xs),
                     Text(
                       l10n.businessManagement,
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: isTablet ? 16 : 14,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.textLight.withOpacity(0.9),
                       ),
                     ),
                   ],
@@ -71,21 +68,11 @@ class DashboardScreen extends StatelessWidget {
 
               // Contenido principal
               Padding(
-                padding: EdgeInsets.all(isTablet ? 32 : 20),
+                padding: AppSpacing.paddingLG,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Título
-                    Text(
-                      'Panel de Control',
-                      style: TextStyle(
-                        fontSize: isLargeTablet ? 32 : (isTablet ? 28 : 24),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: isTablet ? 32 : 24),
-
-                    // Estadísticas en Grid
+                    // Estadísticas en Grid (sin título "Panel de Control")
                     _buildStatsGrid(
                       context,
                       productProvider,
@@ -93,37 +80,26 @@ class DashboardScreen extends StatelessWidget {
                       invoiceProvider,
                       settingsProvider,
                       l10n,
-                      isTablet,
-                      isLargeTablet,
                     ),
 
-                    SizedBox(height: isTablet ? 40 : 32),
+                    SizedBox(height: AppSpacing.xxl),
 
-                    // Accesos rápidos
+                    // Título "Opciones"
                     Text(
-                      'Accesos Rápidos',
-                      style: TextStyle(
-                        fontSize: isLargeTablet ? 24 : (isTablet ? 22 : 20),
-                        fontWeight: FontWeight.bold,
-                      ),
+                      'Opciones',
+                      style: AppTypography.h3,
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: AppSpacing.lg),
 
-                    _buildQuickAccessGrid(
-                      context,
-                      l10n,
-                      isTablet,
-                      isLargeTablet,
-                    ),
+                    _buildQuickAccessGrid(context, l10n),
 
                     // Alerta de stock bajo
-                    if (productProvider.lowStockProducts.isNotEmpty) ...[
-                      SizedBox(height: isTablet ? 40 : 32),
+                    if (productProvider.lowStockProducts.isNotEmpty) ..[
+                      SizedBox(height: AppSpacing.xxl),
                       _buildLowStockAlert(
                         context,
                         productProvider,
                         l10n,
-                        isTablet,
                       ),
                     ],
                   ],
@@ -143,54 +119,52 @@ class DashboardScreen extends StatelessWidget {
     InvoiceProvider invoiceProvider,
     SettingsProvider settingsProvider,
     AppLocalizations l10n,
-    bool isTablet,
-    bool isLargeTablet,
   ) {
     final stats = [
       {
         'title': l10n.productsRegistered,
         'value': '${productProvider.totalProducts}',
         'icon': Icons.inventory_2,
-        'color': const Color(0xFF4CAF50),
+        'color': AppColors.cardProductsColor,
       },
       {
         'title': l10n.ordersPlaced,
         'value': '${orderProvider.totalOrders}',
         'icon': Icons.shopping_cart,
-        'color': const Color(0xFF2196F3),
+        'color': AppColors.cardOrdersColor,
       },
       {
         'title': l10n.invoices,
         'value': '${invoiceProvider.totalInvoices}',
         'icon': Icons.receipt_long,
-        'color': const Color(0xFFFF9800),
+        'color': AppColors.cardInvoicesColor,
       },
       {
         'title': l10n.totalRevenue,
         'value': settingsProvider.formatPrice(invoiceProvider.totalRevenue),
         'icon': Icons.attach_money,
-        'color': const Color(0xFF9C27B0),
+        'color': AppColors.cardRevenueColor,
       },
     ];
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Determinar número de columnas según ancho
+        // Determinar número de columnas según ancho - MÁS COMPACTO
         int crossAxisCount;
         double childAspectRatio;
         
         if (constraints.maxWidth > 1200) {
           crossAxisCount = 4;
-          childAspectRatio = 1.4;
+          childAspectRatio = 1.6; // Más alto para ser más compacto
         } else if (constraints.maxWidth > 900) {
           crossAxisCount = 4;
-          childAspectRatio = 1.2;
+          childAspectRatio = 1.4;
         } else if (constraints.maxWidth > 600) {
           crossAxisCount = 2;
-          childAspectRatio = 1.5;
+          childAspectRatio = 1.8;
         } else {
           crossAxisCount = 1;
-          childAspectRatio = 2.5;
+          childAspectRatio = 3.0; // Más horizontal en móvil
         }
 
         return GridView.builder(
@@ -198,8 +172,8 @@ class DashboardScreen extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: isTablet ? 20 : 16,
-            mainAxisSpacing: isTablet ? 20 : 16,
+            crossAxisSpacing: AppSpacing.md,
+            mainAxisSpacing: AppSpacing.md,
             childAspectRatio: childAspectRatio,
           ),
           itemCount: stats.length,
@@ -210,8 +184,6 @@ class DashboardScreen extends StatelessWidget {
               value: stat['value'] as String,
               icon: stat['icon'] as IconData,
               color: stat['color'] as Color,
-              isTablet: isTablet,
-              isLargeTablet: isLargeTablet,
             );
           },
         );
@@ -224,62 +196,55 @@ class DashboardScreen extends StatelessWidget {
     required String value,
     required IconData icon,
     required Color color,
-    required bool isTablet,
-    required bool isLargeTablet,
   }) {
     return Container(
-      padding: EdgeInsets.all(isTablet ? 20 : 16),
+      padding: AppSpacing.paddingMD,
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppSpacing.borderRadiusMD,
         border: Border.all(
           color: color.withOpacity(0.3),
           width: 2,
         ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(isTablet ? 12 : 10),
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: isLargeTablet ? 32 : (isTablet ? 28 : 24),
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
+          // Icono
+          Container(
+            padding: AppSpacing.paddingSM,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: AppSpacing.borderRadiusSM,
+            ),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 24.sp,
+            ),
+          ),
+          SizedBox(width: AppSpacing.md),
+          
+          // Texto
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
                   title,
-                  style: TextStyle(
-                    fontSize: isTablet ? 15 : 13,
-                    color: Colors.grey[700],
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: AppTypography.statLabel,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: isLargeTablet ? 28 : (isTablet ? 24 : 22),
-              fontWeight: FontWeight.bold,
-              color: color,
+                SizedBox(height: AppSpacing.xxs),
+                Text(
+                  value,
+                  style: AppTypography.statNumber.copyWith(color: color),
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                ),
+              ],
             ),
-            maxLines: 1,
-            overflow: TextOverflow.fade,
           ),
         ],
       ),
@@ -289,32 +254,30 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildQuickAccessGrid(
     BuildContext context,
     AppLocalizations l10n,
-    bool isTablet,
-    bool isLargeTablet,
   ) {
     final quickActions = [
       {
         'icon': Icons.inventory_2,
         'label': l10n.products,
-        'color': const Color(0xFF4CAF50),
+        'color': AppColors.cardProductsColor,
         'route': const ProductsScreen(),
       },
       {
         'icon': Icons.shopping_cart,
         'label': l10n.orders,
-        'color': const Color(0xFF2196F3),
+        'color': AppColors.cardOrdersColor,
         'route': const OrdersScreen(),
       },
       {
         'icon': Icons.receipt_long,
         'label': l10n.invoices,
-        'color': const Color(0xFFFF9800),
+        'color': AppColors.cardInvoicesColor,
         'route': const InvoicesScreen(),
       },
       {
         'icon': Icons.settings,
         'label': l10n.settings,
-        'color': const Color(0xFF607D8B),
+        'color': AppColors.info,
         'route': const SettingsScreen(),
       },
     ];
@@ -326,10 +289,10 @@ class DashboardScreen extends StatelessWidget {
           return GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
+              crossAxisSpacing: AppSpacing.md,
+              mainAxisSpacing: AppSpacing.md,
               childAspectRatio: 3.5,
             ),
             itemCount: quickActions.length,
@@ -341,8 +304,6 @@ class DashboardScreen extends StatelessWidget {
                 label: action['label'] as String,
                 color: action['color'] as Color,
                 route: action['route'] as Widget,
-                isTablet: isTablet,
-                isLargeTablet: isLargeTablet,
               );
             },
           );
@@ -351,15 +312,13 @@ class DashboardScreen extends StatelessWidget {
           return Column(
             children: quickActions.map((action) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: EdgeInsets.only(bottom: AppSpacing.md),
                 child: _buildQuickAccessButton(
                   context: context,
                   icon: action['icon'] as IconData,
                   label: action['label'] as String,
                   color: action['color'] as Color,
                   route: action['route'] as Widget,
-                  isTablet: isTablet,
-                  isLargeTablet: isLargeTablet,
                 ),
               );
             }).toList(),
@@ -375,8 +334,6 @@ class DashboardScreen extends StatelessWidget {
     required String label,
     required Color color,
     required Widget route,
-    required bool isTablet,
-    required bool isLargeTablet,
   }) {
     return Material(
       color: Colors.transparent,
@@ -385,18 +342,18 @@ class DashboardScreen extends StatelessWidget {
           context,
           MaterialPageRoute(builder: (_) => route),
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppSpacing.borderRadiusMD,
         child: Container(
-          padding: EdgeInsets.all(isTablet ? 18 : 16),
+          padding: AppSpacing.paddingLG,
           decoration: BoxDecoration(
             color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppSpacing.borderRadiusMD,
             border: Border.all(color: color.withOpacity(0.3), width: 2),
           ),
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(isTablet ? 14 : 12),
+                padding: AppSpacing.paddingMD,
                 decoration: BoxDecoration(
                   color: color,
                   shape: BoxShape.circle,
@@ -404,18 +361,14 @@ class DashboardScreen extends StatelessWidget {
                 child: Icon(
                   icon,
                   color: Colors.white,
-                  size: isLargeTablet ? 32 : (isTablet ? 28 : 24),
+                  size: 24.sp,
                 ),
               ),
-              SizedBox(width: isTablet ? 18 : 16),
+              SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Text(
                   label,
-                  style: TextStyle(
-                    fontSize: isLargeTablet ? 20 : (isTablet ? 18 : 16),
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                  style: AppTypography.h5.copyWith(color: color),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -423,7 +376,7 @@ class DashboardScreen extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios,
                 color: color,
-                size: isTablet ? 22 : 20,
+                size: 20.sp,
               ),
             ],
           ),
@@ -436,14 +389,16 @@ class DashboardScreen extends StatelessWidget {
     BuildContext context,
     ProductProvider productProvider,
     AppLocalizations l10n,
-    bool isTablet,
   ) {
     return Container(
-      padding: EdgeInsets.all(isTablet ? 20 : 16),
+      padding: AppSpacing.paddingLG,
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.withOpacity(0.3), width: 2),
+        color: AppColors.errorWithOpacity(0.1),
+        borderRadius: AppSpacing.borderRadiusMD,
+        border: Border.all(
+          color: AppColors.errorWithOpacity(0.3),
+          width: 2,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,44 +407,41 @@ class DashboardScreen extends StatelessWidget {
             children: [
               Icon(
                 Icons.warning_amber_rounded,
-                color: Colors.red,
-                size: isTablet ? 28 : 24,
+                color: AppColors.error,
+                size: 24.sp,
               ),
-              SizedBox(width: 12),
+              SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Text(
                   'Productos con stock bajo',
-                  style: TextStyle(
-                    fontSize: isTablet ? 18 : 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red[900],
+                  style: AppTypography.h5.copyWith(
+                    color: AppColors.errorDark,
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          SizedBox(height: AppSpacing.lg),
           ...productProvider.lowStockProducts.take(5).map((product) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: AppSpacing.sm),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Text(
                       product.name,
-                      style: TextStyle(fontSize: isTablet ? 15 : 14),
+                      style: AppTypography.bodyMedium,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(width: 12),
+                  SizedBox(width: AppSpacing.md),
                   Text(
                     '${l10n.stock}: ${product.stock}',
-                    style: TextStyle(
-                      fontSize: isTablet ? 15 : 14,
+                    style: AppTypography.bodyMedium.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.red,
+                      color: AppColors.error,
                     ),
                   ),
                 ],
